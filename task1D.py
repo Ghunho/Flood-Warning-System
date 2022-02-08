@@ -13,7 +13,6 @@ def run():
     print("\n Stations next to River Cam: {}".format(rivers_stations_dict['River Cam']))
     print("\n Stations next to River Thames: {}".format(rivers_stations_dict['River Thames']))
 
-
 if __name__ == "__main__":
     print("*** Task 1D: CUED Part IA Flood Warning System ***")
     run()
