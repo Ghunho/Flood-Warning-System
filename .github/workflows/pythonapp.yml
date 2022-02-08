@@ -29,7 +29,11 @@ jobs:
 
       # - name: Lint with flake8
       #   run: flake8 --statistics *.py
+      - name: Install haversine
+        run:
+          python -m pip install haversine
 
+          
       - name: Run unit tests using pytest
         run: pytest -v
 
