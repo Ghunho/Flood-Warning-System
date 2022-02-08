@@ -26,14 +26,11 @@ def rivers_with_station(stations):
     return rivers
 
 def stations_by_river(stations):
-    stations_in_river={}
+    rivers_stations_dict={}
     for river in rivers_with_station(stations):
-        stations_list = []
-        for station in stations_list:
-            if station.river == river:
-                stations_list.append(station)
-        stations_in_river[river] = stations_list
-    return stations_in_river
+        rivers_stations_dict[river] = sorted([station.name for station in stations if station.river == river])
+    return rivers_stations_dict
+
 
 def rivers_by_station_number(stations, N):
     rivers = rivers_with_station(stations)
@@ -44,7 +41,10 @@ def rivers_by_station_number(stations, N):
             if station.river ==river:
                 count +=1
         rivers_counted.append((river,count))
+        #sorting list according to the number of rivers in descending order 
     rivers_counted = sorted_by_key(rivers_counted,1,reverse=True)
+    #when the next river has the sanme number of stations as the previous one, we include the next one too. 
     while rivers_counted[N-1][1] == rivers_counted[N][1]:
         N +=1
     return rivers_counted[:N]
+
