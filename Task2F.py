@@ -1,30 +1,40 @@
-import datetime
-
-from floodsystem.datafetcher import fetch_measure_levels
 from floodsystem.stationdata import build_station_list, update_water_levels
-from floodsystem.flood import stations_highest_rel_level
-from floodsystem.plot import plot_water_level_with_fit
+from floodsystem.flood import stations_level_over_threshold
+from floodsystem.datafetcher import fetch_measure_levels
+from floodsystem.plot import plot_water_levels, plot_water_level_with_fit
+import datetime
+import matplotlib 
+from floodsystem.utils import sorted_by_key
+import matplotlib.pyplot as plt
+from floodsystem.analysis import polyfit
+ 
+
 
 
 def run():
+
     stations = build_station_list()
+
     update_water_levels(stations)
-    dt = 2 
 
-    stations_at_risk = stations_highest_rel_level(stations, 5)
+    #Remove stations with no data
+    stations_with_water = []
+    for station in stations:
+        if station.latest_level != None:
+            stations_with_water.append(station)
 
-    dates = []
-    levels = []
+    sorted_by_water = sorted(stations_with_water, key=lambda MonitoringStation: MonitoringStation.latest_level, reverse=True)
+    i = 0
+    j = 0
+    while j < 5:
+        dates, levels = fetch_measure_levels(sorted_by_water[i].measure_id, dt=datetime.timedelta(days=2))
 
-    for station in stations_at_risk:
-        results = fetch_measure_levels(station.measure_id, dt=datetime.timedelta(days=dt))
-        dates.append(results[0])
-        levels.append(results[1])
+        try:
+            plot_water_level_with_fit(sorted_by_water[i], dates, levels, 4)
+            i+=1
+            j+=1
+        except:
+            print(sorted_by_water[i].name + 'not enough data for the past two days')
+            i+=1
 
-    plot_water_level_with_fit(stations_at_risk, dates, levels, 4)
-
-    
-
-if __name__ == "__main__":
-    print("*** Task 2F: CUED Part IA Flood Warning System ***")
-    run()
+run()

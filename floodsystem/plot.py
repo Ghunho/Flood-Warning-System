@@ -4,7 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import numpy as np
-
+from floodsystem.analysis  import *
 
 def plot_water_levels(station, dates, levels):
     ## Plots water level data against time for a given station.##
@@ -18,47 +18,31 @@ def plot_water_levels(station, dates, levels):
     plt.tight_layout()
     plt.show()
 
+def plot_water_level_with_fit(station, dates, levels, p):
+    
+    datesConverted = matplotlib.dates.date2num(dates)
 
 
-def plot_water_level_with_fit(station, dates, levels, p, show_typical_range = True):
-    """Plot water levels for a station with polyfit.
-    Also accepts lists as input, showing up to the first 6 stations."""
+    datesShifted = []
+    for date in datesConverted:
+        datesShifted.append(date - datesConverted[-1])
 
-    if isinstance(station, list):
-        if len(station) >= 6:
-            stations = station[0:6]
-            length = 6
-        else:
-            stations = station
-            length = len(stations)
-        for i in range(length):
-            plt.subplot(int(length / 3) + 1, (int(length / 2) > 0) + int(length / 5) + 1, i + 1)
-            plt.plot(dates[i], levels[i])
-            x = matplotlib.dates.date2num(dates[i])
-            poly, shift = polyfit(dates[i], levels[i], 4)
-            if not poly == None:
-                plt.plot(x, poly(x - shift))
-            if show_typical_range:
-                plt.plot(x, [stations[i].typical_range[0]] * len(x), 'g--')
-                plt.plot(x, [stations[i].typical_range[1]] * len(x), 'g--')
-            plt.xlabel("Dates")
-            plt.ylabel("Water Level (m)")
-            plt.xticks(rotation=45);
-            plt.title(stations[i].name)
+    #Calculate polynomial and shift
+    poly, d0 = polyfit(datesShifted, levels, p)
+    
+    # Plot original data points
+    plt.plot(dates, levels, '.')
 
-            # Display plot
-            plt.tight_layout()  # This makes sure plot does not cut off date labels
-        plt.show()
+    #Plot polynomial fit at 30 points along interval
+    x1 = np.linspace(datesShifted[0], datesShifted[-1], 30)
+    plt.plot(np.linspace(datesConverted[0], datesConverted[-1], 30), poly(x1))
 
-    else:
-        plt.plot(dates, levels)
-        plt.xlabel("Dates")
-        plt.ylabel("Water Level (m)")
-        plt.xticks(rotation=45);
-        plt.title(station.name)
-        poly, x1 = polyfit(dates, levels, 4)
-        plt.plot(poly, x1)
+    plt.axhline(y=station.typical_range[0], color='grey', linestyle='--')
+    plt.axhline(y=station.typical_range[1], color='grey', linestyle='--')
+    
 
-        # Display plot
-        plt.tight_layout()  # This makes sure plot does not cut off date labels
-        plt.show()
+    plt.xlabel('date')
+    plt.ylabel('water level (m)')
+    plt.xticks(rotation=45)
+    plt.title(station.name)
+    plt.show()
