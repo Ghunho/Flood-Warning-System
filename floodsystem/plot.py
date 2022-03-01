@@ -6,18 +6,17 @@ from datetime import datetime, timedelta
 import numpy as np
 
 
-
 def plot_water_levels(station, dates, levels):
-    ##function displaying the water levels at different timeline for different stations##
+    ## Plots water level data against time for a given station.##
 
-    plt.plot(dates,levels)
-    plt.xlabel("date")
-    plt.ylabel("water level")
-    plt.title("station: " + station.name) 
+
+    plt.plot(dates, levels)
+    plt.xlabel('date')
+    plt.ylabel('water level')
     plt.xticks(rotation=45)
+    plt.title("station: " + station.name)
     plt.tight_layout()
     plt.show()
-
 
 
 
