@@ -20,10 +20,7 @@ def stations_highest_rel_level(stations, N):
     update_water_levels(stations)
 
     for station in stations:
-        if station.relative_water_level() == None or station.relative_water_level() < tol:
-            pass ##only stations with consistent typical high / low data is considered##
-        elif station.relative_water_level() > tol:
-            output_tuples.append((station, station.relative_water_level()))
+        output_tuples.append((station, station.relative_water_level()))
     output_tuples_sorted = sorted_by_key(output_tuples,1,reverse=True) ##sorted by the relative level in descending order##
     
     output_station = []
